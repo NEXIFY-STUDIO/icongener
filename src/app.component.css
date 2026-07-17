@@ -1,0 +1,89 @@
+/* Parallax Hover Effect for SVG Icons */
+
+/* This container establishes the 3D space and centers the SVG. */
+:host ::ng-deep .parallax-container {
+  perspective: 800px;
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Apply 3D transformations to the SVG and its container on hover */
+:host ::ng-deep .parallax-container svg {
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    width: 100%;
+    height: 100%;
+}
+
+:host ::ng-deep .parallax-container:hover svg {
+    transform: scale(1.1) rotateX(10deg) rotateY(-10deg);
+}
+
+
+/* Base transition for all layers within the SVG */
+:host ::ng-deep .parallax-container g {
+  transform-origin: 50% 50%;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+/* Individual layer movement on hover to create the parallax depth effect */
+:host ::ng-deep .parallax-container:hover #layer-background {
+  transform: translateZ(-30px) scale(0.9);
+}
+
+:host ::ng-deep .parallax-container:hover #layer-mid {
+  transform: translateZ(5px);
+}
+
+:host ::ng-deep .parallax-container:hover #layer-core {
+  transform: translateZ(20px);
+}
+
+:host ::ng-deep .parallax-container:hover #layer-highlight {
+  transform: translateZ(35px) scale(1.05);
+}
+
+:host ::ng-deep .parallax-container:hover #layer-glass {
+  transform: translateZ(50px) scale(1.1);
+}
+
+/* Checkered transparent background styles */
+.checkered-pattern {
+  background-color: #f7fafc;
+  background-image: linear-gradient(45deg, #cbd5e0 25%, transparent 25%),
+                    linear-gradient(-45deg, #cbd5e0 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #cbd5e0 75%),
+                    linear-gradient(-45deg, transparent 75%, #cbd5e0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.checkered-pattern-dark {
+  background-color: #0f172a;
+  background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%),
+                    linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #1e293b 75%),
+                    linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+/* Toast animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-toast {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
