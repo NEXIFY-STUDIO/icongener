@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl, SafeHtml } from '@angular/platform-browser';
 import { ICON_PRESETS, IconPreset, IconCategory } from './icon-presets';
+import { IconForm } from './icon-form';
 
 interface IconSizeOption {
   value: string;
@@ -27,7 +28,7 @@ const MAX_HISTORY_ITEMS = 8;
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, IconForm],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -39,7 +40,19 @@ export class AppComponent implements OnInit {
   productDescription: WritableSignal<string> = signal('');
   productUrl: WritableSignal<string> = signal('');
   selectedSize: WritableSignal<string> = signal('512');
+  selectedAspectRatio: WritableSignal<string> = signal('1:1');
   generatedImageUrl: WritableSignal<string | null> = signal(null);
+
+  getPngDimensions(maxSize: number, aspectRatio: string): { width: number; height: number } {
+    if (aspectRatio === '16:9') {
+      return { width: maxSize, height: Math.round((maxSize * 9) / 16) };
+    } else if (aspectRatio === '4:3') {
+      return { width: maxSize, height: Math.round((maxSize * 3) / 4) };
+    } else if (aspectRatio === '9:16') {
+      return { width: Math.round((maxSize * 9) / 16), height: maxSize };
+    }
+    return { width: maxSize, height: maxSize };
+  }
   loading: WritableSignal<boolean> = signal(false);
   error: WritableSignal<string | null> = signal(null);
 
@@ -111,6 +124,12 @@ export class AppComponent implements OnInit {
       downloadHelpText: 'Click download to get a PNG file resized to your selected dimensions, ready for your manifest.json.',
       downloadButton: 'Download Icon (PNG)',
       errorDescriptionEmpty: 'Product description cannot be empty.',
+      aspectRatioLabel: 'Aspect Ratio',
+      aspectRatio1_1: '1:1 Square (Optimal PWA)',
+      aspectRatio16_9: '16:9 Landscape (Splash)',
+      aspectRatio4_3: '4:3 Standard (Classic)',
+      aspectRatio9_16: '9:16 Portrait (Mobile Launch)',
+      errorInvalidUrl: 'Please enter a valid URL (e.g., https://example.com).',
       errorNoImage: 'No image was generated. Please try again with a different description.',
       errorApiKey: 'There is an issue with your API key. Please ensure it is valid and configured correctly.',
       errorNetwork: 'A network error occurred. Please check your internet connection and try again.',
@@ -193,7 +212,16 @@ RULES:
 - Focus on visual elements, style, color, and composition.
 - The resulting description MUST be in English.
 `,
-      pngPrompt: (description: string, url: string) => `
+      pngPrompt: (description: string, url: string, aspectRatio: string) => {
+        let ratioDesc = 'high-resolution square image';
+        if (aspectRatio === '16:9') {
+          ratioDesc = '16:9 landscape aspect ratio image';
+        } else if (aspectRatio === '4:3') {
+          ratioDesc = '4:3 standard aspect ratio image';
+        } else if (aspectRatio === '9:16') {
+          ratioDesc = '9:16 portrait aspect ratio image';
+        }
+        return `
 Generate an ultra-modern, detailed, 4D parallax PWA icon with the following properties:
 
 1. STYLE
@@ -215,14 +243,28 @@ Create iconography that:
 - Features at least 5 distinct parallax layers: background glow, mid-depth gradient, a central floating object, a highlight layer, and a foreground glossy layer.
 
 3. TECHNICAL PARAMETERS & OUTPUT
-- Generate a high-resolution square image.
+- Generate a ${ratioDesc}.
 - The output must be a PNG file.
 - Apply high sharpness (around 35-50) for crisp details.
 - Use RGB color mode.
 - The design must be optimized for PWA icons, avoiding overly complex details that are unreadable when small.
 - The final output must be ONLY the icon. No text, no extra background, no mockups. Just the clean icon shape with its 4D layers and neon edges.
-`,
-      svgPrompt: (description: string, url: string) => `
+`;
+      },
+      svgPrompt: (description: string, url: string, aspectRatio: string) => {
+        let viewBox = 'viewBox="0 0 100 100"';
+        let ratioDesc = 'square aspect ratio';
+        if (aspectRatio === '16:9') {
+          viewBox = 'viewBox="0 0 160 90"';
+          ratioDesc = '16:9 landscape aspect ratio';
+        } else if (aspectRatio === '4:3') {
+          viewBox = 'viewBox="0 0 400 300"';
+          ratioDesc = '4:3 standard aspect ratio';
+        } else if (aspectRatio === '9:16') {
+          viewBox = 'viewBox="0 0 90 160"';
+          ratioDesc = '9:16 portrait aspect ratio';
+        }
+        return `
 You are an expert SVG icon designer. Generate an ultra-modern, detailed, 4D parallax PWA icon as an SVG, with the following properties:
 
 1. STYLE
@@ -243,10 +285,10 @@ Create iconography that:
 - Is instantly recognizable even at small sizes.
 
 3. TECHNICAL PARAMETERS & SVG STRUCTURE
-- The SVG must be square with a viewBox="0 0 100 100".
+- The SVG must have a ${ratioDesc} with ${viewBox}.
 - The output must be ONLY the raw <svg> element. DO NOT include any XML prolog (<?xml...?>), comments, or any text outside the <svg> tags.
 - The SVG must be structured with named groups for each parallax layer, ready for CSS animation. Use the following structure EXACTLY:
-<svg ...>
+<svg ${viewBox} xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- Gradients or filters can go here -->
   </defs>
@@ -270,7 +312,8 @@ Create iconography that:
 4. OUTPUT
 - Generate only the SVG code. No text, no explanation, no mockups. Just the clean icon shape with its 4D layers and neon edges.
 - The final design must be optimized for PWA icons, avoiding overly complex details that would be unreadable when small.
-`,
+`;
+      },
     },
     sk: {
       title: 'Generátor PWA Ikon',
@@ -286,6 +329,12 @@ Create iconography that:
       downloadHelpText: 'Kliknite na stiahnuť pre získanie PNG súboru s upravenou veľkosťou podľa vášho výberu, pripraveného pre váš manifest.json.',
       downloadButton: 'Stiahnuť Ikonu (PNG)',
       errorDescriptionEmpty: 'Popis produktu nemôže byť prázdny.',
+      aspectRatioLabel: 'Pomer Strán',
+      aspectRatio1_1: '1:1 Štvorec (Optimálne PWA)',
+      aspectRatio16_9: '16:9 Na šírku (Úvodná obrazovka)',
+      aspectRatio4_3: '4:3 Štandard (Klasický)',
+      aspectRatio9_16: '9:16 Na výšku (Mobilný štart)',
+      errorInvalidUrl: 'Zadajte prosím platnú URL adresu (napr. https://example.com).',
       errorNoImage: 'Nebol vygenerovaný žiadny obrázok. Skúste to prosím znova s iným popisom.',
       errorApiKey: 'Vyskytol sa problém s vaším API kľúčom. Uistite sa, že je platný a správne nakonfigurovaný.',
       errorNetwork: 'Vyskytla sa chyba siete. Skontrolujte prosím vaše internetové pripojenie a skúste to znova.',
@@ -368,7 +417,16 @@ PRAVIDLÁ:
 - Zameraj sa na vizuálne prvky, štýl, farbu a kompozíciu.
 - Výsledný popis MUSÍ byť v slovenčine.
 `,
-      pngPrompt: (description: string, url: string) => `
+      pngPrompt: (description: string, url: string, aspectRatio: string) => {
+        let ratioDesc = 'obrázok vo vysokom rozlíšení a štvorcovom formáte';
+        if (aspectRatio === '16:9') {
+          ratioDesc = 'obrázok s pomerom strán 16:9 na šírku';
+        } else if (aspectRatio === '4:3') {
+          ratioDesc = 'obrázok s pomerom strán 4:3';
+        } else if (aspectRatio === '9:16') {
+          ratioDesc = 'obrázok s pomerom strán 9:16 na výšku';
+        }
+        return `
 Vytvor ultra-modernú, detailnú, 4D parallax PWA ikonu s nasledujúcimi vlastnosťami:
 
 1. ŠTÝL
@@ -390,14 +448,28 @@ Na základe týchto údajov vymysli ikonografiu, ktorá:
 - má minimálne 5 paralaxových vrstiev: background glow, mid-depth gradient, floating object, highlight layer, foreground glossy layer
 
 3. TECHNICKÉ PARAMETRE & VÝSTUP
-- Vygeneruj obrázok vo vysokom rozlíšení a štvorcovom formáte.
+- Vygeneruj ${ratioDesc}.
 - Výstup musí byť PNG súbor.
 - Aplikuj vysokú ostrosť (približne 35-50) pre ostré detaily.
 - Použi farebný mód RGB.
 - Dizajn musí byť optimalizovaný pre PWA ikony, vyhýbaj sa príliš zložitým detailom, ktoré sú nečitateľné v malom.
 - Konečný výstup musí byť IBA ikona. Žiadny text, žiadne extra pozadie, žiadne mockupy. Iba čistý tvar ikony s jej 4D vrstvami a neónovými hranami.
-`,
-      svgPrompt: (description: string, url: string) => `
+`;
+      },
+      svgPrompt: (description: string, url: string, aspectRatio: string) => {
+        let viewBox = 'viewBox="0 0 100 100"';
+        let ratioDesc = 'štvorcové s viewBox="0 0 100 100"';
+        if (aspectRatio === '16:9') {
+          viewBox = 'viewBox="0 0 160 90"';
+          ratioDesc = 's pomerom strán 16:9 a s viewBox="0 0 160 90"';
+        } else if (aspectRatio === '4:3') {
+          viewBox = 'viewBox="0 0 400 300"';
+          ratioDesc = 's pomerom strán 4:3 a s viewBox="0 0 400 300"';
+        } else if (aspectRatio === '9:16') {
+          viewBox = 'viewBox="0 0 90 160"';
+          ratioDesc = 's pomerom strán 9:16 a s viewBox="0 0 90 160"';
+        }
+        return `
 Ste expert na dizajn SVG ikon. Vytvorte ultra-modernú, detailnú, 4D parallax PWA ikonu ako SVG s nasledujúcimi vlastnosťami:
 
 1. ŠTÝL
@@ -418,10 +490,10 @@ Vytvorte ikonografiu, ktorá:
 - je okamžite rozpoznateľná aj v malých veľkostiach.
 
 3. TECHNICKÉ PARAMETRE & ŠTRUKTÚRA SVG
-- SVG musí byť štvorcové s viewBox="0 0 100 100".
+- SVG musí byť ${ratioDesc}.
 - výstup musí byť IBA surový <svg> element. NEZAHRŇUJTE žiadny XML prológ (<?xml...?>), komentáre, ani žiadny text mimo <svg> tagov.
 - SVG musí byť štruktúrované s pomenovanými skupinami pre každú parallax vrstvu, pripravené na CSS animáciu. Použite PRESNE nasledujúcu štruktúru:
-<svg ...>
+<svg ${viewBox} xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- Tu môžu byť gradienty alebo filtre -->
   </defs>
@@ -445,7 +517,8 @@ Vytvorte ikonografiu, ktorá:
 4. VÝSTUP
 - Generujte iba SVG kód. Žiadny text, žiadne vysvetlenie, žiadne mockupy. Iba čistý tvar ikony s jej 4D vrstvami a neónovými hranami.
 - Finálny dizajn musí byť optimalizovaný pre PWA ikony, vyhýbajúc sa príliš zložitým detailom, ktoré by boli nečitateľné v malom.
-`,
+`;
+      },
     }
   };
 
@@ -553,7 +626,7 @@ Vytvorte ikonografiu, ktorá:
     return cleaned;
   }
 
-  async convertSvgToPng(svgCode: string, size: number): Promise<string> {
+  async convertSvgToPng(svgCode: string, width: number, height: number): Promise<string> {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const svgBlob = new Blob([svgCode], { type: 'image/svg+xml;charset=utf-8' });
@@ -561,15 +634,15 @@ Vytvorte ikonografiu, ktorá:
 
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
+        canvas.width = width;
+        canvas.height = height;
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           reject(new Error('Could not get 2D canvas context'));
           return;
         }
-        ctx.clearRect(0, 0, size, size);
-        ctx.drawImage(img, 0, 0, size, size);
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
         const pngDataUrl = canvas.toDataURL('image/png');
         URL.revokeObjectURL(url);
         
@@ -640,6 +713,26 @@ Vytvorte ikonografiu, ktorá:
     }
   }
 
+  onFormSubmit(event: { values: any; type: 'png' | 'svg' }): void {
+    this.productDescription.set(event.values.description);
+    this.productUrl.set(event.values.url);
+    this.selectedSize.set(event.values.size);
+    this.selectedAspectRatio.set(event.values.aspectRatio);
+
+    if (event.type === 'png') {
+      this.generateIcon();
+    } else {
+      this.generateSvgIcon();
+    }
+  }
+
+  onFormValuesChanged(values: any): void {
+    this.productDescription.set(values.description);
+    this.productUrl.set(values.url);
+    this.selectedSize.set(values.size);
+    this.selectedAspectRatio.set(values.aspectRatio);
+  }
+
   async generateIcon(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
@@ -648,6 +741,7 @@ Vytvorte ikonografiu, ktorá:
 
     const description = this.productDescription();
     const url = this.productUrl();
+    const aspectRatio = this.selectedAspectRatio();
 
     if (!description) {
       this.error.set(this.t().errorDescriptionEmpty);
@@ -656,7 +750,7 @@ Vytvorte ikonografiu, ktorá:
       return;
     }
 
-    const prompt = this.t().svgPrompt(description, url);
+    const prompt = this.t().svgPrompt(description, url, aspectRatio);
     try {
       const response = await fetch('/api/generate-svg', {
         method: 'POST',
@@ -682,7 +776,8 @@ Vytvorte ikonografiu, ktorá:
         svgCode = svgCode.substring(startIndex, endIndex);
 
         const size = parseInt(this.selectedSize(), 10) || 512;
-        const pngBase64 = await this.convertSvgToPng(svgCode, size);
+        const dims = this.getPngDimensions(size, aspectRatio);
+        const pngBase64 = await this.convertSvgToPng(svgCode, dims.width, dims.height);
         const imageUrl = `data:image/png;base64,${pngBase64}`;
 
         this.generatedImageUrl.set(imageUrl);
@@ -712,6 +807,7 @@ Vytvorte ikonografiu, ktorá:
 
     const description = this.productDescription();
     const url = this.productUrl();
+    const aspectRatio = this.selectedAspectRatio();
 
     if (!description) {
       this.errorSvg.set(this.t().errorDescriptionEmpty);
@@ -720,7 +816,7 @@ Vytvorte ikonografiu, ktorá:
       return;
     }
 
-    const prompt = this.t().svgPrompt(description, url);
+    const prompt = this.t().svgPrompt(description, url, aspectRatio);
 
     try {
       const response = await fetch('/api/generate-svg', {
@@ -810,8 +906,9 @@ Vytvorte ikonografiu, ktorá:
   downloadImage(): void {
     const url = this.generatedImageUrl();
     if (url) {
-      const size = parseInt(this.selectedSize(), 10);
-      this.downloadPngFromBase64(url, size, `pwa-icon-${size}x${size}.png`);
+      const size = parseInt(this.selectedSize(), 10) || 512;
+      const dims = this.getPngDimensions(size, this.selectedAspectRatio());
+      this.downloadPngFromBase64(url, dims.width, dims.height, `pwa-icon-${dims.width}x${dims.height}.png`);
     }
   }
   
@@ -939,22 +1036,22 @@ Vytvorte ikonografiu, ktorá:
 
   downloadHistoryItem(item: HistoryItem): void {
     if (item.type === 'png') {
-      // Download PNG history items at a standard high-res size
-      this.downloadPngFromBase64(item.data, 512, `pwa-icon-history-512x512.png`);
+      // Download PNG history items at a standard high-res size, calculating height dynamically
+      this.downloadPngFromBase64(item.data, 512, undefined, `pwa-icon-history-512.png`);
     } else if (item.type === 'svg') {
       this.downloadSvgFromString(item.data, `pwa-icon-history.svg`);
     }
   }
   
-  private downloadPngFromBase64(base64Url: string, size: number, filename: string): void {
+  private downloadPngFromBase64(base64Url: string, width: number, height: number | undefined, filename: string): void {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
+      canvas.width = width;
+      canvas.height = height !== undefined ? height : Math.round((width * img.naturalHeight) / img.naturalWidth) || width;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.drawImage(img, 0, 0, size, size);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const resizedUrl = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.href = resizedUrl;

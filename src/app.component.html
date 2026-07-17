@@ -70,73 +70,17 @@
       </div>
     }
 
-    <!-- Input Section -->
-    <div class="mb-6">
-      <label for="productDescription" class="block text-lg font-semibold text-gray-200 mb-2">{{ t().productDescriptionLabel }}</label>
-      <textarea
-        id="productDescription"
-        [(ngModel)]="productDescription"
-        rows="4"
-        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-50 resize-y"
-        [placeholder]="t().productDescriptionPlaceholder"
-      ></textarea>
-    </div>
-
-    <div class="mb-6">
-      <label for="productUrl" class="block text-lg font-semibold text-gray-200 mb-2">{{ t().productUrlLabel }}</label>
-      <input
-        type="text"
-        id="productUrl"
-        [(ngModel)]="productUrl"
-        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-50"
-        [placeholder]="t().productUrlPlaceholder"
-      />
-    </div>
-
-    <div class="mb-6">
-      <label for="iconSize" class="block text-lg font-semibold text-gray-200 mb-2">{{ t().iconSizeLabel }}</label>
-      <select
-        id="iconSize"
-        [(ngModel)]="selectedSize"
-        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-50"
-      >
-        @for (size of iconSizes; track size.value) {
-          <option [value]="size.value">{{ size.label }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <button
-        (click)="generateIcon()"
-        [disabled]="loading()"
-        class="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-      >
-        @if (loading()) {
-          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          {{ t().generatingButton }}
-        } @else {
-          {{ t().generateButton }}
-        }
-      </button>
-      <button
-        (click)="generateSvgIcon()"
-        [disabled]="loadingSvg()"
-        class="w-full py-3 px-6 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-      >
-        @if (loadingSvg()) {
-          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          {{ t().generatingSvgButton }}
-        } @else {
-          {{ t().generateSvgButton }}
-        }
-      </button>
+    <!-- Beautiful Dynamic Reactive Form Component -->
+    <div class="mb-8">
+      <app-icon-form
+        [t]="t()"
+        [iconSizes]="iconSizes"
+        [loading]="loading()"
+        [loadingSvg]="loadingSvg()"
+        [initialValues]="{ description: productDescription(), url: productUrl(), size: selectedSize(), aspectRatio: selectedAspectRatio() }"
+        (formSubmit)="onFormSubmit($event)"
+        (valuesChanged)="onFormValuesChanged($event)"
+      ></app-icon-form>
     </div>
 
     <!-- Beautiful Progress & Loading Tracker -->
