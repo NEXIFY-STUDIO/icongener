@@ -58,6 +58,14 @@ UNIT_FILES=(
     "src/app/shared/components/__tests__/sidebar.component.spec.ts"
     "src/app/shared/components/__tests__/header.component.spec.ts"
     "src/app/shared/components/__tests__/logo.component.spec.ts"
+    "src/app/shared/models/__tests__/menu.model.spec.ts"
+    "src/app/features/dashboard/__tests__/dashboard.component.spec.ts"
+    "src/app/features/icon-generator/__tests__/icon-generator.component.spec.ts"
+    "src/app/features/favicon-generator/__tests__/favicon-generator.component.spec.ts"
+    "src/app/features/banner-generator/__tests__/banner-generator.component.spec.ts"
+    "src/app/features/png-to-html/__tests__/png-to-html.component.spec.ts"
+    "src/app/features/history/__tests__/history.component.spec.ts"
+    "src/app/features/settings/__tests__/settings.component.spec.ts"
 )
 
 for file in "${UNIT_FILES[@]}"; do

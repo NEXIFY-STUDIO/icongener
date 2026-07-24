@@ -15,10 +15,28 @@ icongener/
 │   │   ├── progress.service.spec.ts
 │   │   ├── toast.service.spec.ts
 │   │   └── icon-generator.service.spec.ts
-│   ├── shared/components/__tests__/
-│   │   ├── sidebar.component.spec.ts
-│   │   ├── header.component.spec.ts
-│   │   └── logo.component.spec.ts
+│   ├── features/
+│   │   ├── dashboard/__tests__/
+│   │   │   └── dashboard.component.spec.ts
+│   │   ├── icon-generator/__tests__/
+│   │   │   └── icon-generator.component.spec.ts
+│   │   ├── favicon-generator/__tests__/
+│   │   │   └── favicon-generator.component.spec.ts
+│   │   ├── banner-generator/__tests__/
+│   │   │   └── banner-generator.component.spec.ts
+│   │   ├── png-to-html/__tests__/
+│   │   │   └── png-to-html.component.spec.ts
+│   │   ├── history/__tests__/
+│   │   │   └── history.component.spec.ts
+│   │   └── settings/__tests__/
+│   │       └── settings.component.spec.ts
+│   ├── shared/
+│   │   ├── components/__tests__/
+│   │   │   ├── sidebar.component.spec.ts
+│   │   │   ├── header.component.spec.ts
+│   │   │   └── logo.component.spec.ts
+│   │   └── models/__tests__/
+│   │       └── menu.model.spec.ts
 │   ├── layout/__tests__/
 │   │   └── main-layout.component.spec.ts
 │   └── app.component.spec.ts
@@ -282,9 +300,9 @@ icongener/
 ## Test Statistics
 
 ### Unit Tests
-- **Total Files**: 15
-- **Total Tests**: ~100+ (estimated)
-- **Coverage**: Core services, components, and application
+- **Total Files**: 26
+- **Total Tests**: ~200+ (estimated)
+- **Coverage**: Core services, components, models, and application
 
 ### E2E Tests
 - **Total Files**: 8
@@ -292,23 +310,25 @@ icongener/
 - **Coverage**: All major features and workflows
 
 ### Total Tests
-- **Combined**: ~230+ tests
-- **Files**: 23 test files
+- **Combined**: ~330+ tests
+- **Files**: 34 test files
 
 ## Test Categories
 
 ### By Feature
-- **Icon Generator**: 15 unit + 15 e2e = 30 tests
-- **Favicon Generator**: 15 unit + 14 e2e = 29 tests
-- **Banner Generator**: 20 unit + 20 e2e = 40 tests
-- **PNG to HTML**: 16 unit + 16 e2e = 32 tests
-- **History**: 15 e2e tests
-- **Settings**: 20 e2e tests
+- **Icon Generator**: 20 unit + 15 e2e = 35 tests
+- **Favicon Generator**: 20 unit + 14 e2e = 34 tests
+- **Banner Generator**: 25 unit + 20 e2e = 45 tests
+- **PNG to HTML**: 25 unit + 16 e2e = 41 tests
+- **History**: 20 unit + 15 e2e = 35 tests
+- **Settings**: 25 unit + 20 e2e = 45 tests
+- **Dashboard**: 10 unit tests
 - **Navigation**: 15 e2e tests
 - **Global/Integration**: 14 e2e tests
+- **Menu Model**: 25 unit tests
 
 ### By Type
-- **Unit Tests**: ~100+ tests
+- **Unit Tests**: ~200+ tests
 - **E2E Tests**: ~130+ tests
 - **Mobile Tests**: ~40+ tests (integrated in feature tests)
 - **Accessibility Tests**: ~20+ tests (integrated in feature tests)
