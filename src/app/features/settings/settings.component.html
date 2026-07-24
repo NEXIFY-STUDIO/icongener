@@ -1,0 +1,162 @@
+<div class="settings">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">{{ translate('settings') }}</h1>
+    <p class="page-subtitle">{{ translate('description') }}</p>
+  </div>
+
+  <!-- Settings Form -->
+  <div class="settings-form">
+    <!-- Appearance Section -->
+    <div class="settings-section">
+      <h2 class="section-title">{{ translate('appearance') }}</h2>
+      
+      <div class="settings-group">
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-name">{{ translate('language') }}</h3>
+            <p class="setting-description">{{ translate('language') }}</p>
+          </div>
+          <div class="setting-control">
+            <div class="language-selector">
+              <button 
+                type="button"
+                (click)="setLanguage('en')"
+                [class.active]="language() === 'en'"
+              >
+                English
+              </button>
+              <button 
+                type="button"
+                (click)="setLanguage('sk')"
+                [class.active]="language() === 'sk'"
+              >
+                Slovensky
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-name">{{ translate('theme') }}</h3>
+            <p class="setting-description">{{ translate('theme') }}</p>
+          </div>
+          <div class="setting-control">
+            <div class="theme-selector">
+              <button 
+                type="button"
+                (click)="setTheme('dark')"
+                [class.active]="theme() === 'dark'"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                <span>{{ translate('dark') }}</span>
+              </button>
+              <button 
+                type="button"
+                (click)="setTheme('light')"
+                [class.active]="theme() === 'light'"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5"/>
+                  <line x1="12" y1="1" x2="12" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/>
+                  <line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <span>{{ translate('light') }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Settings Section -->
+    <div class="settings-section">
+      <h2 class="section-title">{{ translate('apiSettings') }}</h2>
+      
+      <div class="settings-group">
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3 class="setting-name">{{ translate('mistralApiKey') }}</h3>
+            <p class="setting-description">{{ translate('apiKeyDesc') }}</p>
+          </div>
+          <div class="setting-control">
+            <div class="api-key-input">
+              @if (showApiKey()) {
+                <input 
+                  type="text"
+                  [(ngModel)]="apiKey"
+                  placeholder="Enter your API key"
+                >
+              } @else {
+                <input 
+                  type="password"
+                  [(ngModel)]="apiKey"
+                  placeholder="Enter your API key"
+                >
+              }
+              <button 
+                type="button"
+                (click)="toggleApiKey()"
+                class="toggle-visibility"
+              >
+                @if (showApiKey()) {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="settings-section">
+      <h2 class="section-title">{{ translate('about') }}</h2>
+      
+      <div class="about-content">
+        <p>{{ translate('aboutText') }}</p>
+        <p class="version">{{ translate('version') }}: {{ getVersion() }}</p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="settings-actions">
+      <button type="button" (click)="saveSettings()" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        <span>{{ translate('save') }}</span>
+      </button>
+      
+      <button type="button" (click)="resetSettings()" class="btn btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span>{{ translate('reset') }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <app-toast-container></app-toast-container>
+</div>

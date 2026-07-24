@@ -1,0 +1,220 @@
+<div class="favicon-generator">
+  <!-- Header -->
+  <div class="generator-header">
+    <h1 class="generator-title">{{ translate('faviconGenerator') }}</h1>
+    <p class="generator-subtitle">
+      Create favicons in all standard sizes for browsers
+    </p>
+  </div>
+
+  <!-- Progress Bar (shown during generation) -->
+  @if (isGenerating()) {
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div 
+          class="progress-fill"
+          [style.width.%]="progressService.getProgress()"
+        ></div>
+      </div>
+      <div class="progress-info">
+        <span class="progress-step">{{ progressService.getCurrentStepInfo()?.label || 'Processing...' }}</span>
+        <span class="progress-percentage">{{ progressService.getProgress() }}%</span>
+      </div>
+    </div>
+  }
+
+  <!-- Settings Form -->
+  <div class="settings-form">
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('description') }}</h2>
+      <div class="form-group">
+        <textarea 
+          [(ngModel)]="description"
+          [placeholder]="translate('descriptionPlaceholder')"
+          rows="3"
+          [disabled]="isGenerating()"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <!-- Favicon Type -->
+      <div class="form-section">
+        <h2 class="section-title">{{ translate('faviconType') }}</h2>
+        <div class="type-selector">
+          <label class="radio-label">
+            <input 
+              type="radio"
+              [(ngModel)]="faviconType"
+              value="classic"
+              [disabled]="isGenerating()"
+            >
+            <span class="radio-custom"></span>
+            <span class="radio-text">{{ translate('classic') }}</span>
+          </label>
+          <label class="radio-label">
+            <input 
+              type="radio"
+              [(ngModel)]="faviconType"
+              value="modern"
+              [disabled]="isGenerating()"
+            >
+            <span class="radio-custom"></span>
+            <span class="radio-text">{{ translate('modern') }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Color Picker -->
+      <div class="form-section">
+        <h2 class="section-title">{{ translate('colors') }}</h2>
+        <div class="color-picker">
+          <div class="color-option">
+            <label>{{ translate('primaryColor') }}</label>
+            <div class="color-input">
+              <input 
+                type="color"
+                [(ngModel)]="primaryColor"
+                [disabled]="isGenerating()"
+              >
+              <span class="color-value">{{ primaryColor() }}</span>
+            </div>
+          </div>
+          <div class="color-option">
+            <label>{{ translate('secondaryColor') }}</label>
+            <div class="color-input">
+              <input 
+                type="color"
+                [(ngModel)]="secondaryColor"
+                [disabled]="isGenerating()"
+              >
+              <span class="color-value">{{ secondaryColor() }}</span>
+            </div>
+          </div>
+          <div class="color-option">
+            <label>{{ translate('backgroundColor') }}</label>
+            <div class="color-input">
+              <select [(ngModel)]="backgroundColor" [disabled]="isGenerating()">
+                <option value="transparent">{{ translate('transparent') }}</option>
+                <option value="#1a1a2e">Dark Blue</option>
+                <option value="#ffffff">White</option>
+                <option value="#000000">Black</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <div class="generate-actions">
+      <button 
+        type="button"
+        (click)="generateFavicon()"
+        [disabled]="isGenerating() || !description()"
+        class="btn btn-primary"
+      >
+        @if (isGenerating()) {
+          <span class="btn-loading">
+            <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle class="path" cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="60"/>
+            </svg>
+            {{ translate('generating') }}
+          </span>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <path d="M9 9h6v6H9z"/>
+          </svg>
+          <span>{{ translate('generate') }}</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  @if (generatedFavicons().length > 0) {
+    <div class="results-section">
+      <!-- Browser Preview -->
+      <div class="preview-section">
+        <h2 class="section-title">{{ translate('browserPreview') }}</h2>
+        <div class="browser-mockup">
+          <div class="browser-tab">
+            <div class="favicon-slot">
+              @if (previewSvg()) {
+                <img [src]="getSafeSvgUrl()" alt="Favicon Preview">
+              }
+            </div>
+            <span class="tab-title">My Website</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Favicons Grid -->
+      <div class="favicons-grid">
+        @for (group of groupFaviconsByType(); track group.type) {
+          <div class="favicon-group">
+            <h3 class="group-title">{{ group.type }}</h3>
+            <div class="favicons-row">
+              @for (favicon of group.favicons; track favicon.id) {
+                <div 
+                  class="favicon-item"
+                  [class.selected]="selectedFavicon()?.id === favicon.id"
+                  (click)="selectFavicon(favicon)"
+                >
+                  <div class="favicon-preview">
+                    <img [src]="getSafePngUrl(favicon)" alt="{{ favicon.size.label }}">
+                  </div>
+                  <div class="favicon-info">
+                    <span class="favicon-size">{{ favicon.size.label }}</span>
+                    <button 
+                      class="favicon-download"
+                      (click)="downloadFavicon(favicon); $event.stopPropagation()"
+                      [title]="Download"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Download All Button -->
+      <div class="download-all">
+        <button 
+          type="button"
+          (click)="downloadAllFavicons()"
+          class="btn btn-success"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>{{ translate('downloadAll') }}</span>
+        </button>
+      </div>
+    </div>
+  } @else if (!isGenerating()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <path d="M9 9h6v6H9z"/>
+        </svg>
+      </div>
+      <h3>No Favicons Generated</h3>
+      <p>{{ translate('noFavicons') }}</p>
+    </div>
+  }
+
+  <!-- Toast Container -->
+  <app-toast-container></app-toast-container>
+</div>

@@ -1,0 +1,642 @@
+.favicon-generator {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
+/* Header */
+.generator-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.generator-title {
+  margin: 0 0 12px 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.generator-subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+/* Progress Container */
+.progress-container {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff 0%, #0099cc 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-step {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.progress-percentage {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #00d4ff;
+}
+
+/* Settings Form */
+.settings-form {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #f1f5f9;
+  font-size: 0.9rem;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 80px;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #00d4ff;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.form-group textarea::placeholder {
+  color: #64748b;
+}
+
+.form-group textarea[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Form Row */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+/* Type Selector */
+.type-selector {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  min-width: 120px;
+}
+
+.radio-label:hover:not([disabled]) {
+  background: #334155;
+  border-color: #475569;
+}
+
+.radio-label input[type="radio"] {
+  display: none;
+}
+
+.radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #475569;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom {
+  border-color: #00d4ff;
+  background: #00d4ff;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #1a1a2e;
+  border-radius: 50%;
+}
+
+.radio-text {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom + .radio-text {
+  color: #f1f5f9;
+}
+
+.radio-label[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Color Picker */
+.color-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.color-option {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.color-option label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.color-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-input input[type="color"] {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+}
+
+.color-input input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-input input[type="color"]::-webkit-color-swatch {
+  border: 2px solid #475569;
+  border-radius: 6px;
+}
+
+.color-value {
+  font-size: 0.875rem;
+  color: #f1f5f9;
+  font-family: monospace;
+  font-weight: 500;
+}
+
+.color-input select {
+  padding: 8px 12px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #f1f5f9;
+  font-size: 0.875rem;
+  cursor: pointer;
+  flex: 1;
+}
+
+.color-input select:focus {
+  outline: none;
+  border-color: #00d4ff;
+}
+
+.color-input select option {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+/* Generate Actions */
+.generate-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #1a1a2e;
+}
+
+.btn-primary:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
+}
+
+.btn-primary[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.btn-success:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.spinner .path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* Results Section */
+.results-section {
+  margin-top: 24px;
+}
+
+/* Preview Section */
+.preview-section {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.browser-mockup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.browser-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #0f172a;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.favicon-slot {
+  width: 32px;
+  height: 32px;
+  background: #1e293b;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.favicon-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tab-title {
+  font-size: 0.9rem;
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+/* Favicons Grid */
+.favicons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.favicon-group {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.group-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.favicons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.favicon-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.favicon-item:hover {
+  transform: translateY(-2px);
+}
+
+.favicon-item.selected {
+  outline: 2px solid #00d4ff;
+  outline-offset: 2px;
+}
+
+.favicon-preview {
+  width: 64px;
+  height: 64px;
+  background: #0f172a;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: border-radius 0.3s;
+}
+
+.favicon-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.favicon-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.favicon-size {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.favicon-download {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.favicon-download:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+}
+
+.favicon-download svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Download All */
+.download-all {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #1e293b;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px auto;
+  color: #475569;
+}
+
+.empty-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* Toast Container */
+app-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .favicon-generator {
+    padding: 16px 0;
+  }
+  
+  .generator-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .type-selector {
+    flex-direction: column;
+  }
+  
+  .radio-label {
+    width: 100%;
+  }
+  
+  .color-picker {
+    grid-template-columns: 1fr;
+  }
+  
+  .generate-actions {
+    flex-direction: column;
+  }
+  
+  .generate-actions .btn {
+    width: 100%;
+  }
+  
+  .favicons-row {
+    justify-content: center;
+  }
+  
+  .favicon-item {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .favicon-info {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .form-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .favicons-row {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .browser-tab {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .favicon-slot {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .favicon-preview {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .favicon-size {
+    font-size: 0.7rem;
+  }
+}

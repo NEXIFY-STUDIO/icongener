@@ -1,0 +1,94 @@
+<div class="dashboard">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">
+        <span class="title-text">Welcome to IconGener</span>
+      </h1>
+      <p class="dashboard-subtitle">
+        Generate icons, favicons, banners, and convert PNG to HTML with AI power
+      </p>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats">
+    @for (stat of quickStats(); track stat.label.en) {
+      <div class="stat-card">
+        <div class="stat-icon" [style.background]="'rgba(' + this.hexToRgb(stat.color) + ', 0.1)'">
+          <span [innerHTML]="stat.icon"></span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-label">{{ getLabel(stat) }}</div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="feature-cards">
+    @for (card of featureCards(); track card.id) {
+      <a [routerLink]="card.route" class="feature-card" [style.border-color]="card.color">
+        <div class="card-icon" [style.background]="'rgba(' + this.hexToRgb(card.color) + ', 0.1)'">
+          <span [innerHTML]="card.icon"></span>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">{{ getTitle(card) }}</h3>
+          <p class="card-description">{{ getDescription(card) }}</p>
+        </div>
+        <div class="card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+      </a>
+    }
+  </div>
+
+  <!-- Getting Started Section -->
+  <div class="getting-started">
+    <h2 class="section-title">Getting Started</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Choose a Generator</h3>
+          <p>Select from Icon, Favicon, Banner, or PNG to HTML generator</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Configure Settings</h3>
+          <p>Set your preferences and customize the output</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Generate & Download</h3>
+          <p>Create your assets and download them in various formats</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity Section -->
+  <div class="recent-activity">
+    <h2 class="section-title">Recent Activity</h2>
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="activity-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="activity-content">
+          <p>No recent activity. Start by generating your first icon!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

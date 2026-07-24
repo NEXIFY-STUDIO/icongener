@@ -1,0 +1,257 @@
+<div class="icon-generator">
+  <!-- Header -->
+  <div class="generator-header">
+    <h1 class="generator-title">{{ translate('iconGenerator') }}</h1>
+    <p class="generator-subtitle">
+      Generate PWA, Android, and iOS icons in all required sizes with AI power
+    </p>
+  </div>
+
+  <!-- Progress Bar (shown during generation) -->
+  @if (isGenerating()) {
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div 
+          class="progress-fill"
+          [style.width.%]="progressService.getProgress()"
+        ></div>
+      </div>
+      <div class="progress-info">
+        <span class="progress-step">{{ progressService.getCurrentStepInfo()?.label || 'Processing...' }}</span>
+        <span class="progress-percentage">{{ progressService.getProgress() }}%</span>
+      </div>
+    </div>
+  }
+
+  <!-- Settings Form -->
+  <div class="settings-form">
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('description') }}</h2>
+      <div class="form-group">
+        <textarea 
+          [(ngModel)]="description"
+          [placeholder]="translate('descriptionPlaceholder')"
+          rows="4"
+          [disabled]="isGenerating()"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <!-- Platform Selection -->
+      <div class="form-section">
+        <h2 class="section-title">{{ translate('platform') }}</h2>
+        <div class="platform-selector">
+          @for (platform of platforms; track platform.id) {
+            <button 
+              type="button"
+              (click)="onPlatformChange(platform.id)"
+              [class.active]="selectedPlatform() === platform.id"
+              [disabled]="isGenerating()"
+            >
+              <span class="platform-name">{{ platform.name }}</span>
+              <span class="platform-count">{{ platform.sizes.length }} sizes</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Shape Selection -->
+      <div class="form-section">
+        <h2 class="section-title">{{ translate('shape') }}</h2>
+        <div class="shape-selector">
+          @for (shape of shapes; track shape.id) {
+            <button 
+              type="button"
+              (click)="onShapeChange(shape.id as 'circle' | 'square' | 'rounded')"
+              [class.active]="selectedShape() === shape.id"
+              [disabled]="isGenerating()"
+              [title]="shape.name"
+            >
+              <div class="shape-preview" [style.border-radius]="getBorderRadius(shape.id)"></div>
+              <span class="shape-name">{{ translate(shape.id) }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('colors') }}</h2>
+      <div class="color-picker">
+        <div class="color-option">
+          <label>{{ translate('primaryColor') }}</label>
+          <div class="color-input">
+            <input 
+              type="color"
+              [(ngModel)]="primaryColor"
+              [disabled]="isGenerating()"
+            >
+            <span class="color-value">{{ primaryColor() }}</span>
+          </div>
+        </div>
+        <div class="color-option">
+          <label>{{ translate('secondaryColor') }}</label>
+          <div class="color-input">
+            <input 
+              type="color"
+              [(ngModel)]="secondaryColor"
+              [disabled]="isGenerating()"
+            >
+            <span class="color-value">{{ secondaryColor() }}</span>
+          </div>
+        </div>
+        <div class="color-option">
+          <label>{{ translate('backgroundColor') }}</label>
+          <div class="color-input">
+            <input 
+              type="color"
+              [(ngModel)]="backgroundColor"
+              [disabled]="isGenerating()"
+            >
+            <span class="color-value">{{ backgroundColor() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Buttons -->
+    <div class="generate-actions">
+      <button 
+        type="button"
+        (click)="generateIcons()"
+        [disabled]="isGenerating() || !description()"
+        class="btn btn-primary"
+      >
+        @if (isGenerating()) {
+          <span class="btn-loading">
+            <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle class="path" cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="60"/>
+            </svg>
+            {{ translate('generating') }}
+          </span>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <span>{{ translate('generate') }}</span>
+        }
+      </button>
+      
+      <button 
+        type="button"
+        (click)="generateAllIcons()"
+        [disabled]="isGenerating() || !description()"
+        class="btn btn-secondary"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span>Generate All Platforms</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  @if (generatedIcons().length > 0) {
+    <div class="results-section">
+      <!-- Preview Section -->
+      <div class="preview-section">
+        <h2 class="section-title">{{ translate('preview') }}</h2>
+        <div class="preview-container">
+          <div class="preview-wrapper" [style.border-radius]="getBorderRadius(selectedShape())">
+            @if (previewSvg()) {
+              <img [src]="getSafeSvgUrl()" alt="Icon Preview" class="preview-image">
+            }
+          </div>
+          
+          <div class="preview-controls">
+            <div class="size-selector">
+              <label>{{ translate('selectSize') }}</label>
+              @if (currentPlatform()) {
+                <select (change)="selectPreviewSize({ width: $any($event.target).value.split('x')[0], height: $any($event.target).value.split('x')[1] })">
+                  @for (size of currentPlatform()!.sizes; track size.label) {
+                    <option [value]="size.width + 'x' + size.height">{{ size.label }}</option>
+                  }
+                </select>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Icons Grid -->
+      <div class="icons-grid">
+        @for (group of groupIconsByPlatform(); track group.platform) {
+          <div class="platform-group">
+            <h3 class="platform-title">{{ getPlatformName(group.platform) }}</h3>
+            <div class="icons-row">
+              @for (icon of group.icons; track icon.id) {
+                <div 
+                  class="icon-item"
+                  [class.selected]="selectedIcon()?.id === icon.id"
+                  (click)="selectIcon(icon)"
+                >
+                  <div class="icon-preview" [style.border-radius]="getBorderRadius(icon.shape)">
+                    <img [src]="getSafePngUrl(icon)" alt="{{ icon.size.label }}">
+                  </div>
+                  <div class="icon-info">
+                    <span class="icon-size">{{ icon.size.label }}</span>
+                    <button 
+                      class="icon-download"
+                      (click)="downloadIcon(icon); $event.stopPropagation()"
+                      [title]="Download"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Download All Button -->
+      <div class="download-all">
+        <button 
+          type="button"
+          (click)="downloadAllIcons()"
+          class="btn btn-success"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>{{ translate('downloadAll') }}</span>
+        </button>
+      </div>
+    </div>
+  } @else if (!isGenerating()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <h3>No Icons Generated</h3>
+      <p>{{ translate('noIcons') }}</p>
+    </div>
+  }
+
+  <!-- Toast Container -->
+  <app-toast-container></app-toast-container>
+</div>

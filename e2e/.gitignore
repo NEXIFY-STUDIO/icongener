@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Playwright test results
+playwright-report/
+test-results/
+
+# Playwright traces
+playwright-traces/
+
+# Playwright screenshots
+playwright-screenshots/
+
+# Playwright videos
+playwright-videos/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

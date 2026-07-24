@@ -1,0 +1,283 @@
+<div class="banner-generator">
+  <!-- Header -->
+  <div class="generator-header">
+    <h1 class="generator-title">{{ translate('bannerGenerator') }}</h1>
+    <p class="generator-subtitle">
+      Create custom banners for social media, websites, and advertisements
+    </p>
+  </div>
+
+  <!-- Progress Bar (shown during generation) -->
+  @if (isGenerating()) {
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div 
+          class="progress-fill"
+          [style.width.%]="progressService.getProgress()"
+        ></div>
+      </div>
+      <div class="progress-info">
+        <span class="progress-step">{{ progressService.getCurrentStepInfo()?.label || 'Processing...' }}</span>
+        <span class="progress-percentage">{{ progressService.getProgress() }}%</span>
+      </div>
+    </div>
+  }
+
+  <!-- Settings Form -->
+  <div class="settings-form">
+    <!-- Description -->
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('description') }}</h2>
+      <div class="form-group">
+        <textarea 
+          [(ngModel)]="description"
+          [placeholder]="translate('descriptionPlaceholder')"
+          rows="3"
+          [disabled]="isGenerating()"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Text Content -->
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('textContent') }}</h2>
+      <div class="form-group">
+        <input 
+          type="text"
+          [(ngModel)]="textContent"
+          [placeholder]="translate('textContentPlaceholder')"
+          [disabled]="isGenerating()"
+        >
+      </div>
+    </div>
+
+    <!-- Preset Selection -->
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('preset') }}</h2>
+      
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <button 
+          type="button"
+          (click)="selectCategory('')"
+          [class.active]="!selectedCategory()"
+          [disabled]="isGenerating()"
+        >
+          {{ translate('allCategories') }}
+        </button>
+        @for (category of categories(); track category) {
+          <button 
+            type="button"
+            (click)="selectCategory(category)"
+            [class.active]="selectedCategory() === category"
+            [disabled]="isGenerating()"
+          >
+            {{ category }}
+          </button>
+        }
+      </div>
+      
+      <!-- Preset Grid -->
+      <div class="preset-grid">
+        @for (preset of filteredPresets(); track preset.id) {
+          <button 
+            type="button"
+            (click)="selectPreset(preset.id)"
+            [class.active]="selectedPresetId() === preset.id"
+            [disabled]="isGenerating()"
+            class="preset-card"
+          >
+            <div class="preset-info">
+              <span class="preset-name">{{ preset.name }}</span>
+              <span class="preset-dimensions">{{ preset.width }}x{{ preset.height }}</span>
+            </div>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Custom Size -->
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('customSize') }}</h2>
+      <div class="custom-size">
+        <div class="size-input">
+          <label>{{ translate('width') }}</label>
+          <div class="input-group">
+            <input 
+              type="number"
+              [(ngModel)]="customWidth"
+              min="1"
+              max="10000"
+              [disabled]="isGenerating()"
+            >
+            <span class="input-suffix">{{ translate('pixels') }}</span>
+          </div>
+        </div>
+        <div class="size-input">
+          <label>{{ translate('height') }}</label>
+          <div class="input-group">
+            <input 
+              type="number"
+              [(ngModel)]="customHeight"
+              min="1"
+              max="10000"
+              [disabled]="isGenerating()"
+            >
+            <span class="input-suffix">{{ translate('pixels') }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="form-section">
+      <h2 class="section-title">{{ translate('colors') }}</h2>
+      <div class="color-picker">
+        <div class="color-option">
+          <label>{{ translate('primaryColor') }}</label>
+          <div class="color-input">
+            <input 
+              type="color"
+              [(ngModel)]="primaryColor"
+              [disabled]="isGenerating()"
+            >
+            <span class="color-value">{{ primaryColor() }}</span>
+          </div>
+        </div>
+        <div class="color-option">
+          <label>{{ translate('secondaryColor') }}</label>
+          <div class="color-input">
+            <input 
+              type="color"
+              [(ngModel)]="secondaryColor"
+              [disabled]="isGenerating()"
+            >
+            <span class="color-value">{{ secondaryColor() }}</span>
+          </div>
+        </div>
+        <div class="color-option">
+          <label>{{ translate('backgroundColor') }}</label>
+          <div class="color-input">
+            <input 
+              type="color"
+              [(ngModel)]="backgroundColor"
+              [disabled]="isGenerating()"
+            >
+            <span class="color-value">{{ backgroundColor() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <div class="generate-actions">
+      <button 
+        type="button"
+        (click)="generateBanner()"
+        [disabled]="isGenerating() || !description()"
+        class="btn btn-primary"
+      >
+        @if (isGenerating()) {
+          <span class="btn-loading">
+            <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle class="path" cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="60"/>
+            </svg>
+            {{ translate('generating') }}
+          </span>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <path d="M9 9h6v6H9z"/>
+          </svg>
+          <span>{{ translate('generate') }}</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  @if (generatedBanners().length > 0) {
+    <div class="results-section">
+      <!-- Banner Preview -->
+      <div class="preview-section">
+        <h2 class="section-title">{{ translate('bannerPreview') }}</h2>
+        <div class="banner-preview">
+          @if (previewSvg()) {
+            <img [src]="getSafeSvgUrl()" alt="Banner Preview">
+          }
+        </div>
+        
+        <!-- Banner Info -->
+        @if (selectedBanner()) {
+          <div class="banner-info">
+            <div class="banner-details">
+              <span class="banner-name">{{ selectedBanner()?.preset.name }}</span>
+              <span class="banner-dimensions">{{ selectedBanner()?.preset.width }}x{{ selectedBanner()?.preset.height }} ({{ getAspectRatio(selectedBanner()!) }})</span>
+              <span class="banner-category">{{ selectedBanner()?.preset.category }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Banners Grid -->
+      <div class="banners-grid">
+        @for (banner of generatedBanners(); track banner.id) {
+          <div 
+            class="banner-item"
+            [class.selected]="selectedBanner()?.id === banner.id"
+            (click)="selectBanner(banner)"
+          >
+            <div class="banner-preview-small">
+              <img [src]="getSafePngUrl(banner)" alt="{{ banner.preset.name }}">
+            </div>
+            <div class="banner-info-small">
+              <span class="banner-name-small">{{ banner.preset.name }}</span>
+              <span class="banner-size">{{ banner.preset.width }}x{{ banner.preset.height }}</span>
+            </div>
+            <button 
+              class="banner-download"
+              (click)="downloadBanner(banner); $event.stopPropagation()"
+              [title]="translate('download')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Download All Button -->
+      <div class="download-all">
+        <button 
+          type="button"
+          (click)="downloadAllBanners()"
+          class="btn btn-success"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>{{ translate('downloadAll') }}</span>
+        </button>
+      </div>
+    </div>
+  } @else if (!isGenerating()) {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <path d="M9 9h6v6H9z"/>
+        </svg>
+      </div>
+      <h3>No Banners Generated</h3>
+      <p>{{ translate('noBanners') }}</p>
+    </div>
+  }
+
+  <!-- Toast Container -->
+  <app-toast-container></app-toast-container>
+</div>

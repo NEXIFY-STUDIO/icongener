@@ -7,7 +7,22 @@
     "dev": "ng serve",
     "build": "ng build",
     "preview": "ng serve --configuration=production",
-    "start": "node src/server.ts"
+    "start": "node src/server.ts",
+    "test": "ng test",
+    "test:watch": "ng test --watch",
+    "test:coverage": "ng test --code-coverage",
+    "e2e": "cd e2e && npm install && npx playwright test",
+    "e2e:ui": "cd e2e && npm install && npx playwright test --ui",
+    "e2e:headed": "cd e2e && npm install && npx playwright test --headed",
+    "e2e:debug": "cd e2e && npm install && npx playwright test --debug",
+    "e2e:chrome": "cd e2e && npm install && npx playwright test --project=chromium",
+    "e2e:firefox": "cd e2e && npm install && npx playwright test --project=firefox",
+    "e2e:webkit": "cd e2e && npm install && npx playwright test --project=webkit",
+    "e2e:all": "cd e2e && npm install && npx playwright test --project=chromium --project=firefox --project=webkit",
+    "e2e:codegen": "cd e2e && npm install && npx playwright codegen http://localhost:3000",
+    "e2e:show-report": "cd e2e && npx playwright show-report",
+    "lint": "ng lint",
+    "lint:fix": "ng lint --fix"
   },
   "dependencies": {
     "@angular/build": "^20.3.0",
@@ -22,12 +37,16 @@
     "@angular/ssr": "^20.3.29",
     "@google/genai": "^1.27.0",
     "express": "^5.2.1",
+    "jszip": "^3.10.1",
     "rxjs": "^7.8.2",
     "tailwindcss": "latest"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
     "@types/express": "^5.0.6",
+    "@types/jszip": "^3.4.1",
     "@types/node": "^22.14.0",
+    "@types/playwright": "^1.40.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

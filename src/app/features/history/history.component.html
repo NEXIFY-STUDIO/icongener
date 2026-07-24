@@ -1,0 +1,169 @@
+<div class="history">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">{{ translate('history') }}</h1>
+    <p class="page-subtitle">{{ translate('description') }}</p>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input 
+        type="text"
+        [(ngModel)]="searchQuery"
+        [placeholder]="translate('searchPlaceholder')"
+      >
+    </div>
+    
+    <div class="filter-box">
+      <span class="filter-label">{{ translate('filterByType') }}:</span>
+      <select [(ngModel)]="selectedType" (change)="setType(selectedType)">
+        @for (type of types; track type) {
+          <option [value]="type">{{ getTypeLabel(type) }}</option>
+        }
+      </select>
+    </div>
+    
+    <button type="button" (click)="clearHistory()" class="btn btn-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+      <span>{{ translate('clearHistory') }}</span>
+    </button>
+  </div>
+
+  <!-- History List -->
+  @if (filteredItems().length > 0) {
+    <div class="history-list">
+      @for (item of filteredItems(); track item.id) {
+        <div 
+          class="history-item"
+          [class.selected]="selectedItem()?.id === item.id"
+          (click)="selectItem(item)"
+        >
+          <div class="item-preview">
+            @if (item.preview) {
+              <img [src]="item.preview" alt="{{ item.name }}">
+            } @else {
+              <div class="no-preview">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <path d="M9 9h6v6H9z"/>
+                </svg>
+              </div>
+            }
+          </div>
+          
+          <div class="item-info">
+            <h3 class="item-name">{{ item.name }}</h3>
+            <div class="item-meta">
+              <span class="item-type">{{ getTypeLabel(item.type) }}</span>
+              <span class="item-date">{{ formatDate(item.timestamp) }}</span>
+            </div>
+          </div>
+          
+          <div class="item-actions">
+            <button 
+              type="button"
+              (click)="downloadItem(item); $event.stopPropagation()"
+              class="action-btn"
+              [title]="translate('download')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+            <button 
+              type="button"
+              (click)="removeItem(item.id); $event.stopPropagation()"
+              class="action-btn action-btn-danger"
+              [title]="translate('delete')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <h3>{{ translate('noItems') }}</h3>
+      <p>Your generated items will appear here.</p>
+    </div>
+  }
+
+  <!-- Details Modal -->
+  @if (selectedItem()) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">{{ selectedItem()?.name }}</h2>
+          <button type="button" (click)="closeDetails()" class="modal-close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="detail-preview">
+            @if (selectedItem()?.preview) {
+              <img [src]="selectedItem()?.preview" alt="{{ selectedItem()?.name }}">
+            }
+          </div>
+          
+          <div class="detail-info">
+            <div class="info-row">
+              <span class="info-label">{{ translate('type') }}:</span>
+              <span class="info-value">{{ getTypeLabel(selectedItem()!.type) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">{{ translate('date') }}:</span>
+              <span class="info-value">{{ formatDate(selectedItem()!.timestamp) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">ID:</span>
+              <span class="info-value">{{ selectedItem()?.id }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" (click)="downloadItem(selectedItem()!)" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>{{ translate('download') }}</span>
+          </button>
+          <button type="button" (click)="closeDetails()" class="btn btn-secondary">
+            <span>{{ translate('no') }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Toast Container -->
+  <app-toast-container></app-toast-container>
+</div>

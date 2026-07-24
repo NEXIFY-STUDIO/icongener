@@ -1,0 +1,22 @@
+<div class="layout-container" [class]="sidebarClass">
+  <!-- Sidebar -->
+  <app-sidebar 
+    [isOpen]="isSidebarOpen()"
+    [language]="language()"
+    (toggle)="toggleSidebar()"
+  ></app-sidebar>
+
+  <!-- Header -->
+  <app-header 
+    [language]="language()"
+    (toggleSidebar)="toggleSidebar()"
+    (languageChange)="onLanguageChange($event)"
+  ></app-header>
+
+  <!-- Main Content -->
+  <main class="main-content" #mainContent [class]="contentClass">
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

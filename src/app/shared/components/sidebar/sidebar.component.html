@@ -1,0 +1,68 @@
+<aside class="sidebar" [class.open]="isOpen()">
+  <!-- Logo Section -->
+  <div class="logo-container">
+    <div class="logo-wrapper">
+      <app-logo [size]="'large'" [showTitle]="true"></app-logo>
+    </div>
+  </div>
+
+  <!-- Menu Toggle for Mobile -->
+  <button class="mobile-toggle" (click)="onToggle()" *ngIf="!isOpen()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <!-- Menu Content -->
+  <nav class="menu-content">
+    @for (category of menuItems; track category.id) {
+      <div class="menu-category">
+        <!-- Category Header -->
+        <div 
+          class="category-header"
+          (click)="toggleCategory(category.id)"
+          [class.expanded]="isCategoryExpanded(category.id)"
+        >
+          <span class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 19l7-7 7 7"/>
+              <path d="M21 12H3"/>
+            </svg>
+          </span>
+          <span class="category-label">{{ translate(category.translationKey || category.id) }}</span>
+          <span class="category-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              @if (isCategoryExpanded(category.id)) {
+                <polyline points="18 15 12 9 6 15"></polyline>
+              } @else {
+                <polyline points="6 9 12 15 18 9"></polyline>
+              }
+            </svg>
+          </span>
+        </div>
+
+        <!-- Category Items -->
+        <div class="category-items" [class.expanded]="isCategoryExpanded(category.id)">
+          @for (item of category.items; track item.id) {
+            <a 
+              [routerLink]="item.route"
+              class="menu-item"
+              [class.active]="isItemActive(item)"
+              routerLinkActive="active"
+            >
+              <span class="item-icon" [innerHTML]="getIcon(item.icon)"></span>
+              <span class="item-label">{{ translate(item.translationKey || item.id) }}</span>
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </nav>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer">
+    <div class="version">v1.0.0</div>
+  </div>
+</aside>
