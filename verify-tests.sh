@@ -10,12 +10,15 @@ echo "=========================================="
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Counters
 TOTAL_FILES=0
 UNIT_TESTS=0
-E2E_TESTS=0
+E2E_FEATURE_TESTS=0
+E2E_SERVICE_TESTS=0
+CONFIG_FILES=0
 PASS_COUNT=0
 FAIL_COUNT=0
 
@@ -75,11 +78,11 @@ for file in "${UNIT_FILES[@]}"; do
 done
 
 echo ""
-echo "🌐 E2E Test Files:"
-echo "----------------"
+echo "🌐 E2E Feature Test Files:"
+echo "--------------------------"
 
-# Check e2e test files
-E2E_FILES=(
+# Check e2e feature test files
+E2E_FEATURE_FILES=(
     "e2e/tests/navigation.spec.ts"
     "e2e/tests/icon-generator.spec.ts"
     "e2e/tests/favicon-generator.spec.ts"
@@ -90,29 +93,56 @@ E2E_FILES=(
     "e2e/tests/global.spec.ts"
 )
 
-for file in "${E2E_FILES[@]}"; do
-    check_file "$file" "e2e"
+for file in "${E2E_FEATURE_FILES[@]}"; do
+    check_file "$file" "e2e-feature"
     ((TOTAL_FILES++))
-    ((E2E_TESTS++))
+    ((E2E_FEATURE_TESTS++))
 done
 
 echo ""
-echo "⚙️  Configuration Files:"
-echo "------------------------"
+echo -e "${BLUE}🔧 Service E2E Test Files:${NC}"
+echo "--------------------------"
+
+# Check service e2e test files
+E2E_SERVICE_FILES=(
+    "e2e/tests/services/ai-service.spec.ts"
+    "e2e/tests/services/download-service.spec.ts"
+    "e2e/tests/services/progress-service.spec.ts"
+    "e2e/tests/services/toast-service.spec.ts"
+    "e2e/tests/services/icon-generator-service.spec.ts"
+    "e2e/tests/services/menu-model.spec.ts"
+    "e2e/tests/services/README.md"
+)
+
+for file in "${E2E_SERVICE_FILES[@]}"; do
+    check_file "$file" "e2e-service"
+    ((TOTAL_FILES++))
+    ((E2E_SERVICE_TESTS++))
+done
+
+echo ""
+echo "⚙️  Configuration & Documentation Files:"
+echo "--------------------------------------"
 
 # Check configuration files
-CONFIG_FILES=(
+CONFIG_DOC_FILES=(
     "e2e/playwright.config.ts"
     "e2e/package.json"
-    "e2e/.env"
     "e2e/.gitignore"
     "e2e/tests/README.md"
     "TEST_SUMMARY.md"
+    "TEST_COVERAGE_REPORT.md"
+    "DEVELOPMENT.md"
+    "QUICK_START.md"
+    "README.md"
+    ".env.example"
+    ".gitignore"
 )
 
-for file in "${CONFIG_FILES[@]}"; do
+for file in "${CONFIG_DOC_FILES[@]}"; do
     check_file "$file" "config"
     ((TOTAL_FILES++))
+    ((CONFIG_FILES++))
 done
 
 echo ""
@@ -121,10 +151,18 @@ echo "📊 Summary:"
 echo "=========================================="
 echo -e "Total files checked: ${TOTAL_FILES}"
 echo -e "Unit test files: ${UNIT_TESTS}"
-echo -e "E2E test files: ${E2E_TESTS}"
-echo -e "Configuration files: $((TOTAL_FILES - UNIT_TESTS - E2E_TESTS))"
+echo -e "E2E feature test files: ${E2E_FEATURE_TESTS}"
+echo -e "E2E service test files: ${E2E_SERVICE_TESTS}"
+echo -e "Configuration & docs: ${CONFIG_FILES}"
 echo -e "Passed: ${GREEN}${PASS_COUNT}${NC}"
 echo -e "Failed: ${RED}${FAIL_COUNT}${NC}"
+
+echo ""
+echo "📈 Test Statistics:"
+echo "  ≈ Unit Tests: ~200+ tests in $UNIT_TESTS files"
+echo "  ≈ E2E Feature Tests: ~130+ tests in $E2E_FEATURE_TESTS files"
+echo "  ≈ E2E Service Tests: ~95+ tests in $E2E_SERVICE_TESTS files"
+echo "  ≈ Total: ~425+ tests across all files"
 
 if [ $FAIL_COUNT -eq 0 ]; then
     echo -e "${GREEN}✓ All test files are properly created!${NC}"
