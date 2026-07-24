@@ -1,4 +1,16 @@
+# ============================================
+# Environment and Configuration
+# ============================================
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+
+# ============================================
 # Logs
+# ============================================
 logs
 *.log
 npm-debug.log*
@@ -7,18 +19,92 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# ============================================
+# Build Output
+# ============================================
 node_modules
 dist
 dist-ssr
+build
 *.local
 
-# Editor directories and files
+# ============================================
+# Test Output
+# ============================================
+coverage
+playwright-report
+test-results
+playwright-traces
+playwright-screenshots
+playwright-videos
+
+# ============================================
+# IDE and Editor
+# ============================================
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .idea
+*.iml
+*.ipr
+*.iws
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# ============================================
+# OS Files
+# ============================================
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+
+# ============================================
+# Downloads and Cache
+# ============================================
+downloads/
+.cache/
+.tmp/
+.temp/
+
+# ============================================
+# Local History and Backup
+# ============================================
+.history/
+*.bak
+*.backup
+*.orig
+
+# ============================================
+# Environment Specific
+# ============================================
+*.env
+!*.env.example
+!*.env.template
+
+# ============================================
+# Node.js
+# ============================================
+npm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ============================================
+# Angular Specific
+# ============================================
+.angular/
+
+# ============================================
+# Test Files (keep spec files)
+# ============================================
+*.spec.js
+!*.spec.ts
